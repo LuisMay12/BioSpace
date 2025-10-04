@@ -17,7 +17,7 @@ model = SentenceTransformer(MODEL_NAME)
 # qué texto embebemos (ajusta a tu gusto)
 def build_text(doc):
     parts = []
-    if doc.get("title"): parts.append(str(doc["title"]))
+    if doc.get("titulo"): parts.append(str(doc["titulo"]))
     if doc.get("abstract"): parts.append(str(doc["abstract"]))
     # si quieres: categorias/tipo_articulo para señal adicional
     if doc.get("categorias"): parts.append("; ".join(doc["categorias"]) if isinstance(doc["categorias"], list) else str(doc["categorias"]))
@@ -27,7 +27,7 @@ def build_text(doc):
 
 # procesa por lotes
 BATCH = 200
-cursor = col.find({}, {"_id": 1, "title": 1, "abstract": 1, "categorias": 1, "tipo_articulo": 1})
+cursor = col.find({}, {"_id": 1, "titulo": 1, "abstract": 1, "categorias": 1, "tipo_articulo": 1})
 batch_docs = []
 for d in cursor:
     text = build_text(d)

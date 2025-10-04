@@ -90,7 +90,7 @@ def _build_filter(q: RAGQuery):
 
 def _format_citation(doc):
     # Devuelve un pequeño texto con cita
-    title = doc.get("title") or ""
+    title = doc.get("titulo") or ""
     pid = doc.get("_id")
     year = doc.get("year")
     doi = doc.get("doi")
@@ -148,10 +148,10 @@ def rag(q: RAGQuery):
     print("Docs con embedding:", col.count_documents({"embedding": {"$exists": True, "$type": "array"}}))
 
     # 2) Mira 1 doc con embedding y su dimensión
-    doc = col.find_one({"embedding": {"$exists": True}}, {"title":1, "embedding": {"$slice": 5}})
+    doc = col.find_one({"embedding": {"$exists": True}}, {"titulo":1, "embedding": {"$slice": 5}})
     if doc:
         full = col.find_one({"_id": doc["_id"]}, {"embedding":1})
-        print("Ejemplo título:", doc.get("title"))
+        print("Ejemplo título:", doc.get("titulo"))
         print("Len embedding:", len(full["embedding"]) if full and full.get("embedding") else None)
 
     # 3) ¿Qué valores reales tienen 'categorias'?
@@ -171,7 +171,7 @@ def rag(q: RAGQuery):
             }
         },
         {"$project": {
-            "title": 1, "abstract": 1, "url": 1, "year": 1, "doi": 1,
+            "titulo": 1, "abstract": 1, "url": 1, "year": 1, "doi": 1,
             "autores": 1, "categorias": 1, "tipo_articulo": 1,
             "score": {"$meta": "vectorSearchScore"}
         }},
@@ -195,7 +195,7 @@ def rag(q: RAGQuery):
         "results": [
             {
                 "id": str(r.get("_id")),
-                "title": r.get("title"),
+                "title": r.get("titulo"),
                 "url": r.get("url"),
                 "doi": r.get("doi"),
                 "year": r.get("year"),
