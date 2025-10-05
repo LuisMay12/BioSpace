@@ -1,17 +1,5 @@
-# Dependencias mínimas para los imports solicitados
-# Mapeo import -> paquete pip
-# fastapi, fastapi.middleware.cors            -> fastapi
-# pydantic                                   -> pydantic
-# pymongo, bson.ObjectId                     -> pymongo
-# sentence_transformers                      -> sentence-transformers (puede traer torch y deps pesadas)
-# urllib.parse, datetime, typing, os         -> parte de la stdlib (no requieren instalación)
-
 fastapi
 pydantic
 pymongo
 sentence-transformers
 uvicorn[standard]
-
-# Nota: `sentence-transformers` normalmente instalará `transformers` y `torch` (o variantes).
-# Si no quieres compilar `torch` en Docker, instala antes la rueda oficial de PyTorch
-# o usa un index que provea ruedas precompiladas (ej. https://download.pytorch.org/whl/cpu).
