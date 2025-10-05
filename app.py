@@ -8,6 +8,7 @@ from pymongo import MongoClient
 from bson import ObjectId
 from sentence_transformers import SentenceTransformer
 from urllib.parse import quote_plus
+from datetime import datetime
 
 # (Opcional) LLM para generación
 USE_OPENAI = bool(os.getenv("OPENAI_API_KEY"))
@@ -101,7 +102,7 @@ def _format_citation(doc):
     # Devuelve un pequeño texto con cita
     title = doc.get("titulo") or ""
     pid = doc.get("_id")
-    year = doc.get("year")
+    year = doc.get("publication_date")
     doi = doc.get("doi")
     url = doc.get("url")
     return f"[{pid} - {year}] {title} (DOI: {doi}) {url or ''}".strip()
@@ -180,7 +181,7 @@ def rag(q: RAGQuery):
             }
         },
         {"$project": {
-            "titulo": 1, "abstract": 1, "url": 1, "year": 1, "doi": 1,
+            "titulo": 1, "abstract": 1, "url": 1, "publication_date": 1, "doi": 1,
             "autores": 1, "categorias": 1, "tipo_articulo": 1,
             "score": {"$meta": "vectorSearchScore"}
         }},
@@ -207,7 +208,7 @@ def rag(q: RAGQuery):
                 "title": r.get("titulo"),
                 "url": r.get("url"),
                 "doi": r.get("doi"),
-                "year": r.get("year"),
+                "year": r.get("publication_date").year if isinstance(r.get("publication_date"), datetime) else r.get("publication_date"),
                 "autores": r.get("autores"),
                 "categorias": r.get("categorias"),
                 "tipo_articulo": r.get("tipo_articulo"),
