@@ -19,8 +19,8 @@ if USE_OPENAI:
 
 # ===== Configuración general =====
 DB_NAME = os.getenv("DB_NAME", "BioSearch")
-COLL = os.getenv("COLL", "papers")
-ATLAS_VECTOR_INDEX = os.getenv("ATLAS_VECTOR_INDEX", "default")  # cambia si tu índice tiene otro nombre
+COLL = os.getenv("COLL", "papers_v2")
+ATLAS_VECTOR_INDEX = os.getenv("ATLAS_VECTOR_INDEX", "default2")  # cambia si tu índice tiene otro nombre
 EMB_MODEL = os.getenv("EMB_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
 
 # ===== Credenciales Mongo Atlas =====
