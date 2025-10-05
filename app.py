@@ -20,12 +20,12 @@ if USE_OPENAI:
 # ===== Configuración general =====
 DB_NAME = os.getenv("DB_NAME", "BioSearch")
 COLL = os.getenv("COLL", "papers_v2")
-ATLAS_VECTOR_INDEX = os.getenv("ATLAS_VECTOR_INDEX", "default2")  # cambia si tu índice tiene otro nombre
+ATLAS_VECTOR_INDEX = os.getenv("ATLAS_VECTOR_INDEX", "default2")
 EMB_MODEL = os.getenv("EMB_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
 
 # ===== Credenciales Mongo Atlas =====
 USER = os.getenv("MONGO_USER", "luismayrdz_db_user")
-PASSWORD = os.getenv("MONGO_PASS", "tNXwmDPBL4hwyhpu")  # ⚠️ idealmente guárdala en .env
+PASSWORD = os.getenv("MONGO_PASS", "tNXwmDPBL4hwyhpu") 
 DB = DB_NAME
 REPLICA_SET = "atlas-x2ji3e-shard-0"  # de tu DNS TXT
 
@@ -69,14 +69,13 @@ class RAGQuery(BaseModel):
     k: int = 6
     year_from: Optional[int] = None
     year_to: Optional[int] = None
-    autores: Optional[List[str]] = None      # exact match (case sensitive/insensitive según tus datos)
-    categorias: Optional[List[str]] = None   # exact match
+    autores: Optional[List[str]] = None
+    categorias: Optional[List[str]] = None
     tipo_articulo: Optional[str] = None
-    generate: bool = False                   # si quieres que llame LLM
-    max_context_chars: int = 3000            # para controlar el tamaño del prompt
+    generate: bool = False
+    max_context_chars: int = 3000
 
 def _build_filter(q: RAGQuery):
-    # Construye un filtro Atlas Search $vectorSearch + filtros metadata con $match posterior
     match = {}
     if q.year_from or q.year_to:
         match["year"] = {}
@@ -91,7 +90,6 @@ def _build_filter(q: RAGQuery):
     return match
 
 def _format_citation(doc):
-    # Devuelve un pequeño texto con cita
     title = doc.get("titulo") or ""
     pid = doc.get("_id")
     year = doc.get("publication_date")
@@ -100,12 +98,12 @@ def _format_citation(doc):
     return f"[{pid} - {year}] {title} (DOI: {doi}) {url or ''}".strip()
 
 def _compose_context(docs: List[dict], max_chars: int):
-    # concatena títulos + trozos del abstract hasta llenar max_chars
+
     parts = []
     total = 0
     for d in docs:
         head = f"### {_format_citation(d)}\n"
-        body = (d.get("abstract") or "")[:800]  # corta por sanidad
+        body = (d.get("abstract") or "")[:800]
         block = head + body + "\n\n"
         if total + len(block) > max_chars:
             break
@@ -126,7 +124,6 @@ Contexto:
 Responde en español, conciso, estructurado en viñetas cuando sea útil.
 """
     if not USE_OPENAI:
-        # Fallback: devuelve un "extractive summary" simple (sin LLM)
         return "Contexto relevante:\n" + context[:1200] + ("\n… (truncado)" if len(context) > 1200 else "")
 
     # Con OpenAI (ejemplo con responses)
@@ -139,12 +136,8 @@ Responde en español, conciso, estructurado en viñetas cuando sea útil.
 
 @app.post("/rag")
 def rag(q: RAGQuery):
-    # 1) Embedding de la consulta
     q_vec = emb_model.encode(q.query).tolist()
     
-
-
-    # 2) Vector Search en Atlas (KNN) + filtros con $match
     pipeline = [
         {
             "$vectorSearch": {
@@ -162,18 +155,15 @@ def rag(q: RAGQuery):
         }},
     ]
 
-    # Aplica filtros después del vectorSearch (o usa "filter" en vectorSearch si tienes Atlas > 7.0)
     match = _build_filter(q)
     if match:
         pipeline.append({"$match": match})
 
     results = list(col.aggregate(pipeline))
 
-    # 3) Armar contexto y (opcional) preguntar al LLM
     context = _compose_context(results, q.max_context_chars)
     answer = _generate_answer(q.query, context) if q.generate else None
 
-    # 4) Respuesta con snippets y metadatos (citas)
     return {
         "query": q.query,
         "count": len(results),
@@ -197,7 +187,6 @@ def rag(q: RAGQuery):
 
 @app.get("/5-docs")
 def get_five_docs():
-    # Helper to convert non-JSON-serializable Mongo types (ObjectId) recursively
     def _sanitize_doc(doc):
         if not isinstance(doc, dict):
             return doc
@@ -222,7 +211,6 @@ def get_five_docs():
         return out
 
     docs = []
-    # Project a small set of fields to keep response compact; adjust as needed
     cursor = col.find({}).limit(5)
     for d in cursor:
         docs.append(_sanitize_doc(d))
