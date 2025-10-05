@@ -2,6 +2,7 @@
 import os
 from typing import List, Optional
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from pymongo import MongoClient
 from bson import ObjectId
@@ -61,6 +62,14 @@ except Exception as e:
 emb_model = SentenceTransformer(EMB_MODEL)
 col = client[DB_NAME][COLL]
 app = FastAPI(title="RAG Searcher")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # cambiar a dominios específicos en producción
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class RAGQuery(BaseModel):
     query: str
