@@ -16,14 +16,6 @@ if USE_OPENAI:
     from openai import OpenAI
     openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-# MONGO_URI = os.getenv("MONGO_URI", "mongodb+srv://luismayrdz_db_user:tNXwmDPBL4hwyhpu@biospacedb.sgh5mic.mongodb.net/?retryWrites=true&w=majority&appName=BioSpacedb")
-# DB_NAME = os.getenv("DB_NAME", "BioSpacedb")
-# COLL = os.getenv("COLL", "papers")
-# ATLAS_VECTOR_INDEX = os.getenv("ATLAS_VECTOR_INDEX", "default")  # nombre del índice que creaste
-# EMB_MODEL = os.getenv("EMB_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
-
-# client = MongoClient(MONGO_URI)
-# col = client[DB_NAME][COLL]
 
 # ===== Configuración general =====
 DB_NAME = os.getenv("DB_NAME", "BioSearch")
@@ -149,24 +141,7 @@ Responde en español, conciso, estructurado en viñetas cuando sea útil.
 def rag(q: RAGQuery):
     # 1) Embedding de la consulta
     q_vec = emb_model.encode(q.query).tolist()
-    print(f"Query vector (len={len(q_vec)}): {q_vec[:5]}...")
     
-    print(f"Que mierda es col {col.count_documents({})}")
-    
-    # checking how many docs has those shitttt
-    # 1) ¿Cuántos docs tienen vector?
-    print("Docs con embedding:", col.count_documents({"embedding": {"$exists": True, "$type": "array"}}))
-
-    # 2) Mira 1 doc con embedding y su dimensión
-    doc = col.find_one({"embedding": {"$exists": True}}, {"titulo":1, "embedding": {"$slice": 5}})
-    if doc:
-        full = col.find_one({"_id": doc["_id"]}, {"embedding":1})
-        print("Ejemplo título:", doc.get("titulo"))
-        print("Len embedding:", len(full["embedding"]) if full and full.get("embedding") else None)
-
-    # 3) ¿Qué valores reales tienen 'categorias'?
-    print("Algunos 'categorias':", col.distinct("categorias")[:10])  # si es array, te mostrará strings
-    print("Distinct 'tipo_articulo':", col.distinct("tipo_articulo")[:10])
 
 
     # 2) Vector Search en Atlas (KNN) + filtros con $match

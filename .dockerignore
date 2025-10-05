@@ -1,0 +1,39 @@
+# VCS y entornos
+.git
+.git-lfs
+.venv
+venv
+.env
+.env.*
+embed_papers.py
+__pycache__/
+*.py[cod]
+*.log
+.mypy_cache/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Frontend / node
+node_modules/
+
+# Datos/modelos pesados
+data/
+datasets/
+models/
+checkpoints/
+artifacts/
+*.parquet
+*.feather
+*.csv
+*.tsv
+*.xlsx
+*.zip
+*.tar
+*.tar.gz
+*.pt
+*.bin
+*.safetensors
+
+# Caches varias
+.cache/
+.huggingface/

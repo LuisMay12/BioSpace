@@ -1,0 +1,18 @@
+services:
+  api:
+    build:
+      context: .
+      target: prod
+    ports:
+      - "8000:8000"
+    # environment:
+    #   DB_NAME: BioSearch
+    #   COLL: papers
+    #   ATLAS_VECTOR_INDEX: default
+    #   EMB_MODEL: sentence-transformers/all-MiniLM-L6-v2
+    #   MONGO_USER: ${MONGO_USER}
+    #   MONGO_PASS: ${MONGO_PASS}
+    volumes:
+      - hf_cache:/root/.cache/huggingface
+volumes:
+  hf_cache:
