@@ -19,15 +19,15 @@ if USE_OPENAI:
 
 # ===== Configuración general =====
 DB_NAME = os.getenv("DB_NAME", "BioSearch")
-COLL = os.getenv("COLL", "papers_v2")
-ATLAS_VECTOR_INDEX = os.getenv("ATLAS_VECTOR_INDEX", "default2")
+COLL = os.getenv("COLL", "")
+ATLAS_VECTOR_INDEX = os.getenv("ATLAS_VECTOR_INDEX", "")
 EMB_MODEL = os.getenv("EMB_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
 
 # ===== Credenciales Mongo Atlas =====
-USER = os.getenv("MONGO_USER", "luismayrdz_db_user")
-PASSWORD = os.getenv("MONGO_PASS", "tNXwmDPBL4hwyhpu") 
+USER = os.getenv("MONGO_USER", "")
+PASSWORD = os.getenv("MONGO_PASS", "") 
 DB = DB_NAME
-REPLICA_SET = "atlas-x2ji3e-shard-0"  # de tu DNS TXT
+REPLICA_SET = "atlas-x2ji3e-shard-0"
 
 PWD = quote_plus(PASSWORD)
 SEEDS = (
